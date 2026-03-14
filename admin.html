@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    (function() {
+      const key = 'admin_auth';
+      if (sessionStorage.getItem(key) !== 'true') {
+        const pw = prompt('Password:');
+        if (pw !== 'nisha2024') { document.write('<h2 style="font-family:sans-serif;padding:2rem">Access denied.</h2>'); throw new Error('auth'); }
+        sessionStorage.setItem(key, 'true');
+      }
+    })();
+  </script>
+  <title>Projects Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="tokens.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      font-size: var(--text-base);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      line-height: var(--leading-body);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 280px; min-width: 280px;
+      background: var(--color-bg-2);
+      border-right: 1px solid var(--color-border);
+      display: flex; flex-direction: column;
+      height: 100vh;
+    }
+    .sidebar-header {
+      padding: var(--space-md);
+      border-bottom: 1px solid var(--color-border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .sidebar-title {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--color-text-tertiary);
+      letter-spacing: var(--tracking-wider); text-transform: uppercase;
+    }
+    .project-list { flex: 1; overflow-y: auto; padding: var(--space-xs); }
+    .project-item {
+      padding: 10px var(--space-md);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background var(--transition);
+      display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm);
+    }
+    .project-item:hover { background: var(--color-bg-3); }
+    .project-item.active { background: var(--color-bg-3); }
+    .project-item-name {
+      font-size: var(--text-sm); color: var(--color-text-secondary);
+      line-height: 1.4; flex: 1;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .project-item.active .project-item-name { color: var(--color-accent); }
+    .project-item-year {
+      font-family: var(--font-mono); font-size: var(--text-xs);
+      color: var(--color-text-tertiary); white-space: nowrap;
+    }
+
+    /* ── Buttons ── */
+    .btn-icon {
+      width: 28px; height: 28px;
+      background: none; border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-secondary); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; line-height: 1;
+      transition: color var(--transition), background var(--transition), border-color var(--transition);
+    }
+    .btn-icon:hover { color: var(--color-text-primary); background: var(--color-bg-3); }
+    .btn {
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: var(--text-sm); font-family: var(--font-sans);
+      font-weight: var(--weight-medium);
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition), opacity var(--transition);
+      border: 1px solid var(--color-border);
+      display: inline-flex; align-items: center;
+    }
+    .btn-ghost { background: none; color: var(--color-text-secondary); }
+    .btn-ghost:hover { background: var(--color-bg-3); color: var(--color-text-primary); }
+    .btn-primary { background: var(--color-accent); color: var(--color-bg); border-color: var(--color-accent); }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-danger { background: none; color: var(--color-destructive); border-color: color-mix(in srgb, var(--color-destructive) 40%, transparent); }
+    .btn-danger:hover { background: var(--color-destructive); color: #fff; border-color: var(--color-destructive); }
+
+    /* ── Main ── */
+    .main { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .main-header {
+      padding: var(--space-sm) var(--space-lg);
+      border-bottom: 1px solid var(--color-border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--color-bg); min-height: 56px;
+    }
+    .main-header-title {
+      font-size: var(--text-base); font-weight: var(--weight-medium);
+      color: var(--color-text-primary);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 60%;
+    }
+    .header-actions { display: flex; gap: var(--space-sm); flex-shrink: 0; }
+    .form-scroll { flex: 1; overflow-y: auto; padding: var(--space-lg); }
+
+    /* ── Form ── */
+    .form-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--space-md); margin-bottom: var(--space-xl);
+    }
+    .form-field { display: flex; flex-direction: column; gap: 6px; }
+    .form-field.span2 { grid-column: span 2; }
+    .form-field.full  { grid-column: 1 / -1; }
+    label {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--color-text-tertiary);
+      letter-spacing: var(--tracking-wider); text-transform: uppercase;
+    }
+    input, textarea {
+      background: var(--color-bg-2); border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-primary); font-family: var(--font-sans);
+      font-size: var(--text-sm); padding: 8px var(--space-sm);
+      transition: border-color var(--transition); outline: none; width: 100%;
+    }
+    input:focus, textarea:focus { border-color: var(--color-accent); }
+    textarea { resize: vertical; min-height: 72px; line-height: var(--leading-body); }
+
+    /* ── Sections ── */
+    .sections-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--space-md);
+    }
+    .sections-label {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--color-text-tertiary);
+      letter-spacing: var(--tracking-wider); text-transform: uppercase;
+    }
+    .sections-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .section-row {
+      background: var(--color-bg-2); border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm); overflow: hidden;
+    }
+    .section-row-header {
+      display: flex; align-items: center; gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+    }
+    .drag-handle { color: var(--color-text-tertiary); font-size: 14px; flex-shrink: 0; }
+    .section-label-input {
+      flex: 0 0 200px;
+      background: transparent; border: none;
+      border-bottom: 1px solid var(--color-border); border-radius: 0;
+      font-weight: var(--weight-medium); font-size: var(--text-sm); padding: 2px 4px;
+    }
+    .section-label-input:focus { border-bottom-color: var(--color-accent); outline: none; }
+    .section-actions { margin-left: auto; display: flex; gap: 4px; }
+    .section-content-wrap { padding: 0 var(--space-md) var(--space-md); }
+    .section-content-wrap textarea { min-height: 100px; }
+
+    /* ── Cover image ── */
+    .cover-controls {
+      display: flex; gap: var(--space-sm); align-items: center;
+      margin-bottom: var(--space-sm);
+    }
+    .cover-toggle {
+      display: flex; border: 1px solid var(--color-border); border-radius: var(--radius-sm); overflow: hidden;
+    }
+    .cover-toggle button {
+      padding: 4px 12px; font-size: var(--text-xs); font-family: var(--font-sans);
+      background: none; border: none; color: var(--color-text-secondary); cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+    }
+    .cover-toggle button.active { background: var(--color-bg-3); color: var(--color-text-primary); }
+    .cover-slots {
+      display: flex; gap: 12px; margin-bottom: var(--space-xl);
+      width: 60%; aspect-ratio: 16/7; margin-left: auto; margin-right: auto;
+    }
+    .cover-slot {
+      flex: 1; background: var(--color-bg-3);
+      border: 1px dashed var(--color-border); border-radius: var(--radius-sm);
+      overflow: hidden; position: relative; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 6px;
+      font-family: var(--font-mono); font-size: 10px; color: var(--color-text-tertiary);
+      transition: border-color var(--transition);
+    }
+    .cover-slot:hover { border-color: var(--color-text-secondary); }
+    .cover-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .cover-slot-remove {
+      position: absolute; top: 6px; right: 6px; z-index: 2;
+      width: 20px; height: 20px; border: none; border-radius: 50%;
+      background: rgba(0,0,0,0.65); color: #fff; font-size: 13px;
+      cursor: pointer; display: none; align-items: center; justify-content: center; line-height: 1;
+    }
+    .cover-slot:hover .cover-slot-remove { display: flex; }
+
+    /* ── Layout canvas ── */
+    .layout-canvas-controls {
+      display: flex; gap: var(--space-sm); align-items: center;
+      margin-bottom: var(--space-sm); width: 60%; flex-wrap: nowrap; margin-left: auto; margin-right: auto;
+    }
+    .snap-label {
+      display: flex; align-items: center; gap: 0; cursor: pointer;
+      font-family: var(--font-mono); font-size: 10px; color: var(--color-text-tertiary);
+      white-space: nowrap; margin-left: auto;
+    }
+    .snap-label input { margin: 0 4px 0 0; padding: 0; flex-shrink: 0; }
+    .snap-label span { letter-spacing: 0; text-transform: none; }
+    .layout-canvas {
+      position: relative; width: 60%; aspect-ratio: 1/2; margin-left: auto; margin-right: auto;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent calc(calc(100%/12) - 1px), var(--color-border) calc(calc(100%/12) - 1px), var(--color-border) calc(100%/12)
+      ),
+      repeating-linear-gradient(
+        90deg, transparent, transparent calc(calc(100%/6) - 1px), var(--color-border) calc(calc(100%/6) - 1px), var(--color-border) calc(100%/6)
+      );
+      border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+      overflow: hidden; margin-bottom: var(--space-xl);
+    }
+    .layout-box {
+      position: absolute; box-sizing: border-box;
+      border: 2px solid; cursor: move; overflow: visible;
+    }
+    .layout-box-inner {
+      position: absolute; inset: 0; overflow: hidden;
+    }
+    .layout-box-inner img {
+      width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none;
+    }
+    .box-upload {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 4px; cursor: pointer;
+      font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.7);
+    }
+    .box-num {
+      position: absolute; top: 4px; left: 4px; z-index: 2;
+      font-family: var(--font-mono); font-size: 9px; color: #fff;
+      padding: 1px 5px; border-radius: 2px; pointer-events: none; line-height: 1.5;
+    }
+    .box-remove {
+      position: absolute; top: 4px; right: 4px; z-index: 2;
+      width: 18px; height: 18px; border: none; border-radius: 50%;
+      background: rgba(0,0,0,0.65); color: #fff; font-size: 12px;
+      cursor: pointer; display: none; align-items: center; justify-content: center;
+    }
+    .layout-box:hover .box-remove { display: flex; }
+    .rh {
+      position: absolute; width: 10px; height: 10px; z-index: 3;
+      background: #fff; border-radius: 2px; border: 2px solid;
+      box-sizing: border-box;
+    }
+    .rh.nw { top:-5px; left:-5px; cursor:nw-resize; }
+    .rh.n  { top:-5px; left:calc(50% - 5px); cursor:n-resize; }
+    .rh.ne { top:-5px; right:-5px; cursor:ne-resize; }
+    .rh.e  { top:calc(50% - 5px); right:-5px; cursor:e-resize; }
+    .rh.se { bottom:-5px; right:-5px; cursor:se-resize; }
+    .rh.s  { bottom:-5px; left:calc(50% - 5px); cursor:s-resize; }
+    .rh.sw { bottom:-5px; left:-5px; cursor:sw-resize; }
+    .rh.w  { top:calc(50% - 5px); left:-5px; cursor:w-resize; }
+
+    /* ── Empty state ── */
+    .empty-state {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      height: 100%; gap: var(--space-md); color: var(--color-text-tertiary);
+    }
+    .empty-state p { font-size: var(--text-sm); }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: var(--space-lg); left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--color-bg-3); border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm); padding: var(--space-sm) var(--space-md);
+      font-size: var(--text-sm); color: var(--color-text-primary);
+      transition: transform 300ms var(--ease-default); z-index: 999; white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <span class="sidebar-title">Projects</span>
+    <button class="btn-icon" id="btnNew" title="New project">+</button>
+  </div>
+  <div class="project-list" id="projectList"></div>
+</aside>
+
+<div class="main">
+  <div class="main-header">
+    <span class="main-header-title" id="formTitle">Select a project</span>
+    <div class="header-actions">
+      <button class="btn btn-ghost" id="btnExport">Export JSON</button>
+      <button class="btn btn-danger" id="btnDelete" style="display:none">Delete</button>
+      <button class="btn btn-primary" id="btnSave" style="display:none">Save</button>
+    </div>
+  </div>
+  <div class="form-scroll" id="formScroll">
+    <div class="empty-state" id="emptyState"><p>Select a project or create a new one.</p></div>
+    <div id="formContent" style="display:none">
+      <div class="form-grid">
+        <div class="form-field full">
+          <label>Title</label>
+          <input type="text" id="fTitle" placeholder="Project title" />
+        </div>
+        <div class="form-field">
+          <label>Year</label>
+          <input type="text" id="fYear" placeholder="2024" />
+        </div>
+        <div class="form-field">
+          <label>Type</label>
+          <input type="text" id="fType" placeholder="UX Research" />
+        </div>
+        <div class="form-field">
+          <label>Meta label</label>
+          <input type="text" id="fMeta" placeholder="UX Research · 2024" />
+        </div>
+        <div class="form-field full">
+          <label>Short description (shown on work list)</label>
+          <textarea id="fDesc" rows="2" placeholder="One or two sentences shown on the work list..."></textarea>
+        </div>
+      </div>
+      <div class="sections-header" style="margin-bottom: var(--space-sm);">
+        <span class="sections-label">Cover image (work list)</span>
+      </div>
+      <div class="cover-controls">
+        <div class="cover-toggle">
+          <button id="cover1Btn" class="active">1 image</button>
+          <button id="cover2Btn">2 side by side</button>
+        </div>
+      </div>
+      <div class="cover-slots" id="coverSlots"></div>
+
+      <div class="sections-header" style="margin-bottom: var(--space-sm);">
+        <span class="sections-label">Case study images</span>
+      </div>
+      <div class="layout-canvas-controls">
+        <button class="btn btn-ghost" id="btnAddBox">+ Add image</button>
+        <button class="btn btn-ghost" id="btnClearLayout">Clear all</button>
+        <label class="snap-label"><input type="checkbox" id="snapToggle" /><span>Snap to grid</span></label>
+      </div>
+      <div class="layout-canvas" id="layoutCanvas"></div>
+
+      <div class="sections-header">
+        <span class="sections-label">Case study sections</span>
+        <button class="btn btn-ghost" id="btnAddSection">+ Add section</button>
+      </div>
+      <div class="sections-list" id="sectionsList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'nisha_projects';
+
+
+const SEED = [
+  {
+    id: 'unlocking-insights',
+    title: 'Unlocking Insights: Data Exploration for UX Researchers',
+    year: '2024', type: 'UX Research', meta: 'UX Research · 2024',
+    description: 'A deep dive into how researchers can leverage data exploration techniques to surface meaningful insights faster and with more confidence.',
+    sections: [
+      { label: 'Overview', content: 'A deep dive into how UX researchers can leverage data exploration techniques to surface meaningful insights faster and with more confidence. The project emerged from a recurring frustration: research teams generating rich data but struggling to move from raw findings to clear direction. The goal was a repeatable, teachable framework — not a one-time fix.' },
+      { label: 'The Challenge', content: 'Research teams were drowning in data but struggling to synthesize it into actionable direction. There was no shared framework for moving from raw findings to decisions. Senior researchers were doing it intuitively but couldn\'t articulate the steps. Junior researchers had no scaffold to follow. The gap was costing weeks per project cycle.' },
+      { label: 'My Role', content: 'I led the end-to-end research and framework development — from generative discovery through validation, documentation, and rollout. I worked cross-functionally with research leads, product managers, and learning & development to ensure the framework was grounded in real workflows and would actually get used.' },
+      { label: 'Solution', content: 'A structured data exploration framework that gives researchers a repeatable process — from data collection through synthesis to insight generation. The framework has four phases: scope, cluster, interrogate, and land. Each phase has clear entry and exit criteria so teams know when to move forward and when to go deeper.' },
+      { label: 'Design Process', content: 'Conducted generative interviews with 12 UX researchers across industries. Mapped existing workflows, identified bottlenecks, and iterated on the framework through two rounds of validation. Created supporting materials including a facilitation guide, a self-assessment tool, and a set of worked examples showing the framework applied to real past projects.' },
+      { label: 'What I Learned', content: 'The hardest part wasn\'t the framework itself — it was getting researchers to trust a structured process when their instinct was to stay in exploratory mode indefinitely. The framing that worked: the framework doesn\'t replace judgment, it creates the conditions for better judgment.' },
+      { label: 'Results', content: 'Reduced time-to-insight for participating teams. Framework adopted as an internal standard and published as a reference for the wider research community. Three months post-launch, teams reported higher confidence in presenting findings and fewer rounds of stakeholder pushback on research direction.' }
+    ]
+  },
+  {
+    id: 'avalara-workramp',
+    title: "Evaluative UXR Study: Product Performance for Avalara's Learning Platform",
+    year: '2023', type: 'UX Research', meta: 'UX Research · 2023',
+    description: 'Global evaluative study with 500+ users measuring product performance and surfacing usability gaps across a complex enterprise platform.',
+    sections: [
+      { label: 'Overview', content: "WorkRamp functions as Avalara's unified learning platform, consolidating previously dispersed departmental systems. The platform aimed to eliminate inconsistent usage patterns and improve data collection across the organization. This evaluative study measured product performance across three user groups — Learners, Managers, and Administrators — to identify usability gaps and surface a clear direction for improvement." },
+      { label: 'The Challenge', content: 'Despite implementation benefits, challenges emerged around inconsistent user engagement and adoption. The research sought to identify pain points and create a cohesive experience for Learner, Manager, and Administrator console users regardless of role, tenure, region, or department. Diverse departmental priorities required strategic communication and negotiation to align stakeholders on a shared research agenda.' },
+      { label: 'Solution', content: "A mixed-methods study designed to resolve the team's open questions with enough confidence to act. Research questions focused on three areas: usability issues challenging WorkRamp users, effectiveness of search and discovery methods, and whether content offerings met user knowledge needs. The approach combined heuristic evaluation, large-scale survey, and moderated interviews to triangulate findings across all three consoles." },
+      { label: 'Key Objectives', content: 'Improve User Engagement · Provide a Unified and User-Friendly Experience · Enhance Search and Discovery Capabilities · Ensure Content Relevance and Quality' },
+      { label: 'Research Questions', content: '1. What usability issues and challenges do users encounter while navigating WorkRamp?\n2. How effective are the search and discovery methods for finding content on the platform?\n3. Do the content offerings effectively meet the knowledge needs of users?' },
+      { label: 'Design Process', content: 'Conducted a heuristic evaluation of all three consoles. Ran a survey with 512 responses from a diverse cross-section of the workforce. Conducted 18 user interviews — 10 Learners, 5 Administrators, and 3 Managers — using remote usability testing sessions. Synthesized quantitative and qualitative data in parallel and presented findings as a prioritized action plan tied directly to the platform\'s adoption objectives.' },
+      { label: 'Results', content: 'Learners were found to overlook the filter icon, relying solely on quick search — pointing to a discoverability issue. Managers faced frustration due to limited permissions and views. Administrators lacked training resources for content creation. Findings directly informed the product roadmap, with improvements targeting enhanced user engagement and platform adoption, improved employee learning outcomes, empowered manager tracking capabilities, and streamlined administrative content management.' }
+    ]
+  },
+  {
+    id: 'clothing-boutique',
+    title: 'Web App to Improve Operational Efficiency for a Clothing Boutique',
+    year: '2022', type: 'Product Design', meta: 'Product Design · 2022',
+    description: 'End-to-end design from system analysis through high-fidelity prototype and usability validation for an independent retail operation.',
+    sections: [
+      { label: 'Overview', content: 'End-to-end design for a web application to improve operational efficiency for an independent clothing boutique — from system analysis through high-fidelity prototype and usability validation.' },
+      { label: 'The Challenge', content: 'The owner and staff were managing inventory, orders, and scheduling across disconnected tools. Manual workarounds were costing hours every week and creating errors.' },
+      { label: 'Solution', content: 'A unified web app giving staff a single source of truth for inventory, scheduling, and order management — designed around how they actually worked, not how the tools assumed they did.' },
+      { label: 'Design Process', content: 'Started with an operational audit and contextual interviews. Mapped current workflows against tool capabilities to identify the gaps. Iterated through wireframes and two rounds of usability testing before handoff.' },
+      { label: 'Results', content: 'Eliminated 6+ hours of manual work per week. Reduced inventory errors significantly. Owner reported the tool paid for itself within the first month of use.' }
+    ]
+  },
+  {
+    id: 'peerconnect',
+    title: 'Enhancing Transfer Student Support with PeerConnect',
+    year: '2022', type: 'UX Research · Product Strategy', meta: 'UX Research · Product Strategy · 2022',
+    description: 'Generative UXR study identifying unmet needs of transfer students, resulting in a peer-connection platform concept backed by evidence.',
+    sections: [
+      { label: 'Overview', content: 'Generative UXR study identifying unmet needs of transfer students, resulting in a peer-connection platform concept backed by evidence.' },
+      { label: 'The Challenge', content: 'Transfer students were falling through the cracks — existing support systems were built for first-year students and didn\'t address the specific navigational and social challenges of transferring mid-degree.' },
+      { label: 'Solution', content: 'PeerConnect — a platform concept pairing incoming transfer students with near-peer mentors who had recently navigated the same transition, addressing the social and informational gaps existing systems missed.' },
+      { label: 'Design Process', content: 'Interviews and diary studies with 30+ transfer students across two institutions. Affinity mapping revealed that the hardest part wasn\'t academic — it was knowing what you didn\'t know. Concept validated through two rounds of concept testing.' },
+      { label: 'Results', content: 'Platform concept endorsed by university administration for pilot development. Research findings presented to student services leadership and informed a revision of the existing transfer support program.' }
+    ]
+  },
+  {
+    id: 'music-wellbeing',
+    title: 'Personalized Music Recommendation for Mental Well-being',
+    year: 'Ongoing', type: 'Quantitative Research', meta: 'Quantitative Research · Ongoing',
+    description: 'Using survey data and machine learning to match music preferences with mental health patterns — exploring whether what we listen to can be a lever for emotional regulation.',
+    sections: [
+      { label: 'Overview', content: 'Using survey data and machine learning to match music preferences with mental health patterns — exploring whether what we listen to can be a lever for emotional regulation.' },
+      { label: 'The Challenge', content: 'Mental health interventions are often inaccessible, stigmatized, or require significant behavior change. Music is already embedded in daily life — the question is whether it can be made intentional enough to have therapeutic value.' },
+      { label: 'Solution', content: 'A personalized recommendation model that matches listening behavior with self-reported mood data, identifying patterns and surfacing music likely to support emotional regulation goals.' },
+      { label: 'Design Process', content: 'Survey-based data collection with 200+ participants. Exploratory data analysis to identify listening-mood correlations. Machine learning model development ongoing, with the next phase focused on real-time personalization.' },
+      { label: 'Results', content: 'Early findings show meaningful correlations between listening behavior and mood patterns. Research ongoing — next phase will test whether intentional music selection produces measurable shifts in emotional state over time.' }
+    ]
+  }
+];
+
+// ── State ────────────────────────────────────────────────────
+let projects = [];
+let activeId = null;
+
+function loadProjects() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  projects = stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(SEED));
+}
+
+function saveProjects(silent = false) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+    if (!silent) showToast('Saved — refresh portfolio.html to see changes');
+  } catch(e) {
+    showToast('Storage full — use smaller images (< 500 KB each)');
+  }
+}
+
+function getActive() { return projects.find(p => p.id === activeId); }
+
+// ── Sidebar ──────────────────────────────────────────────────
+function renderSidebar() {
+  const list = document.getElementById('projectList');
+  list.innerHTML = projects.map(p => `
+    <div class="project-item ${p.id === activeId ? 'active' : ''}" data-id="${p.id}">
+      <span class="project-item-name">${esc(p.title)}</span>
+      <span class="project-item-year">${esc(p.year)}</span>
+    </div>
+  `).join('');
+  list.querySelectorAll('.project-item').forEach(el =>
+    el.addEventListener('click', () => selectProject(el.dataset.id))
+  );
+}
+
+// ── Form ─────────────────────────────────────────────────────
+function selectProject(id) {
+  activeId = id;
+  renderSidebar();
+  renderForm();
+}
+
+function renderForm() {
+  const p = getActive();
+  document.getElementById('emptyState').style.display  = p ? 'none'         : 'flex';
+  document.getElementById('formContent').style.display = p ? 'block'        : 'none';
+  document.getElementById('btnSave').style.display     = p ? 'inline-flex'  : 'none';
+  document.getElementById('btnDelete').style.display   = p ? 'inline-flex'  : 'none';
+  if (!p) { document.getElementById('formTitle').textContent = 'Select a project'; return; }
+  document.getElementById('formTitle').textContent = p.title || 'Untitled';
+  document.getElementById('fTitle').value = p.title       || '';
+  document.getElementById('fYear').value  = p.year        || '';
+  document.getElementById('fType').value  = p.type        || '';
+  document.getElementById('fMeta').value  = p.meta        || '';
+  document.getElementById('fDesc').value  = p.description || '';
+  renderSections(p.sections || []);
+  renderCoverSlots();
+  renderLayoutBuilder();
+}
+
+function renderSections(sections) {
+  const list = document.getElementById('sectionsList');
+  list.innerHTML = sections.map((s, i) => `
+    <div class="section-row" data-index="${i}">
+      <div class="section-row-header">
+        <span class="drag-handle">⠿</span>
+        <input class="section-label-input" type="text" value="${esc(s.label)}" placeholder="Label" data-field="label" data-index="${i}" />
+        <div class="section-actions">
+          <button class="btn-icon" data-action="up"     data-index="${i}" title="Move up">↑</button>
+          <button class="btn-icon" data-action="down"   data-index="${i}" title="Move down">↓</button>
+          <button class="btn-icon" data-action="remove" data-index="${i}" title="Remove">×</button>
+        </div>
+      </div>
+      <div class="section-content-wrap">
+        <textarea placeholder="Section content..." data-field="content" data-index="${i}">${esc(s.content)}</textarea>
+      </div>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('[data-field]').forEach(el =>
+    el.addEventListener('input', () => {
+      const p = getActive(); if (!p) return;
+      p.sections[+el.dataset.index][el.dataset.field] = el.value;
+    })
+  );
+
+  list.querySelectorAll('[data-action]').forEach(btn =>
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const p = getActive(); if (!p) return;
+      const i = +btn.dataset.index;
+      if (btn.dataset.action === 'remove') {
+        p.sections.splice(i, 1);
+      } else if (btn.dataset.action === 'up' && i > 0) {
+        [p.sections[i - 1], p.sections[i]] = [p.sections[i], p.sections[i - 1]];
+      } else if (btn.dataset.action === 'down' && i < p.sections.length - 1) {
+        [p.sections[i], p.sections[i + 1]] = [p.sections[i + 1], p.sections[i]];
+      }
+      renderSections(p.sections);
+    })
+  );
+}
+
+const SLOT_COLORS = ['#6366f1','#f59e0b','#10b981','#ef4444','#8b5cf6','#06b6d4','#ec4899','#f97316','#14b8a6','#a855f7'];
+let snapEnabled = false;
+
+function snapVal(v, axis) {
+  const unit = axis === 'y' ? 100 / 12 : 100 / 6;
+  return snapEnabled ? Math.round(v / unit) * unit : Math.round(v * 10) / 10;
+}
+
+function getFileInput() {
+  let fp = document.getElementById('imgFileInput');
+  if (!fp) {
+    fp = document.createElement('input');
+    fp.type = 'file'; fp.accept = 'image/*';
+    fp.id = 'imgFileInput'; fp.style.display = 'none';
+    document.body.appendChild(fp);
+  }
+  return fp;
+}
+
+function compressImage(dataUrl, maxW, maxH, quality, cb) {
+  const img = new Image();
+  img.onload = () => {
+    let w = img.naturalWidth, h = img.naturalHeight;
+    if (w > maxW || h > maxH) {
+      const scale = Math.min(maxW / w, maxH / h);
+      w = Math.round(w * scale); h = Math.round(h * scale);
+    }
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    cb(c.toDataURL('image/jpeg', quality));
+  };
+  img.src = dataUrl;
+}
+
+function uploadImageFor(slotIdx) {
+  const fp = getFileInput();
+  fp.value = '';
+  fp.onchange = () => {
+    const file = fp.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      compressImage(e.target.result, 1200, 900, 0.82, compressed => {
+        const p = getActive(); if (!p) return;
+        if (!p.images) p.images = [];
+        p.images[slotIdx] = compressed;
+        saveProjects(true);
+        renderLayoutBuilder();
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+  fp.click();
+}
+
+function getCanvasRect() {
+  return document.getElementById('layoutCanvas').getBoundingClientRect();
+}
+
+function updateBoxEl(idx) {
+  const p = getActive(); if (!p) return;
+  const box = p.imageLayout[idx];
+  const el = document.querySelector(`#layoutCanvas [data-idx="${idx}"]`);
+  if (el) {
+    el.style.left   = box.left   + '%';
+    el.style.top    = box.top    + '%';
+    el.style.width  = box.width  + '%';
+    el.style.height = box.height + '%';
+  }
+}
+
+function startDrag(e, idx) {
+  const p = getActive(); if (!p) return;
+  const box = p.imageLayout[idx];
+  const rect = getCanvasRect();
+  const sx = e.clientX, sy = e.clientY;
+  const sl = box.left, st = box.top;
+  const onMove = e => {
+    const dx = (e.clientX - sx) / rect.width * 100;
+    const dy = (e.clientY - sy) / rect.height * 100;
+    box.left = Math.max(0, Math.min(100 - box.width,  snapVal(sl + dx, 'x')));
+    box.top  = Math.max(0, Math.min(100 - box.height, snapVal(st + dy, 'y')));
+    updateBoxEl(idx);
+  };
+  const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); saveProjects(true); };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function startResize(e, idx, dir) {
+  const p = getActive(); if (!p) return;
+  const box = p.imageLayout[idx];
+  const rect = getCanvasRect();
+  const sx = e.clientX, sy = e.clientY;
+  const orig = { ...box };
+  const MIN = 5;
+  const onMove = e => {
+    const dx = (e.clientX - sx) / rect.width  * 100;
+    const dy = (e.clientY - sy) / rect.height * 100;
+    if (dir.includes('e')) box.width  = Math.min(100 - box.left, snapVal(Math.max(MIN, orig.width  + dx), 'x'));
+    if (dir.includes('s')) box.height = Math.min(100 - box.top,  snapVal(Math.max(MIN, orig.height + dy), 'y'));
+    if (dir.includes('w')) {
+      const w = snapVal(Math.max(MIN, orig.width - dx), 'x');
+      box.left = Math.max(0, snapVal(orig.left + orig.width - w, 'x')); box.width = w;
+    }
+    if (dir.includes('n')) {
+      const h = snapVal(Math.max(MIN, orig.height - dy), 'y');
+      box.top = Math.max(0, snapVal(orig.top + orig.height - h, 'y')); box.height = h;
+    }
+    updateBoxEl(idx);
+  };
+  const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); saveProjects(true); };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function renderLayoutBuilder() {
+  const p = getActive(); if (!p) return;
+  if (!p.imageLayout) p.imageLayout = [];
+  const layout = p.imageLayout;
+  const images = p.images || [];
+  const canvas = document.getElementById('layoutCanvas');
+  canvas.innerHTML = '';
+
+  layout.forEach((box, i) => {
+    const color = SLOT_COLORS[i % 6];
+    const el = document.createElement('div');
+    el.className = 'layout-box';
+    el.dataset.idx = i;
+    el.style.cssText = `left:${box.left}%;top:${box.top}%;width:${box.width}%;height:${box.height}%;border-color:${color};`;
+
+    const inner = document.createElement('div');
+    inner.className = 'layout-box-inner';
+    inner.style.background = images[i] ? 'transparent' : color + '22';
+    if (images[i]) {
+      const img = document.createElement('img'); img.src = images[i]; inner.appendChild(img);
+    } else {
+      const up = document.createElement('div');
+      up.className = 'box-upload';
+      up.innerHTML = `<span style="font-size:22px;opacity:.8">+</span><span>Image ${i + 1}</span>`;
+      up.addEventListener('click', () => uploadImageFor(i));
+      inner.appendChild(up);
+    }
+    el.appendChild(inner);
+
+    const num = document.createElement('div');
+    num.className = 'box-num'; num.style.background = color;
+    num.textContent = i + 1; el.appendChild(num);
+
+    const rem = document.createElement('button');
+    rem.className = 'box-remove'; rem.innerHTML = '×';
+    rem.addEventListener('click', e => {
+      e.stopPropagation();
+      p.imageLayout.splice(i, 1);
+      if (p.images) p.images.splice(i, 1);
+      saveProjects(true); renderLayoutBuilder();
+    });
+    el.appendChild(rem);
+
+    ['nw','n','ne','e','se','s','sw','w'].forEach(dir => {
+      const h = document.createElement('div');
+      h.className = `rh ${dir}`; h.style.borderColor = color;
+      h.addEventListener('mousedown', e => { e.preventDefault(); e.stopPropagation(); startResize(e, i, dir); });
+      el.appendChild(h);
+    });
+
+    el.addEventListener('mousedown', e => {
+      if (e.target.classList.contains('rh') || e.target.classList.contains('box-remove') || e.target.classList.contains('box-upload') || e.target.closest('.box-upload')) return;
+      e.preventDefault(); startDrag(e, i);
+    });
+
+    canvas.appendChild(el);
+  });
+}
+
+// ── Cover image ──────────────────────────────────────────────
+function renderCoverSlots() {
+  const p = getActive(); if (!p) return;
+  if (!p.coverImages) p.coverImages = [];
+  if (!p.coverCount) p.coverCount = 1;
+  document.getElementById('cover1Btn').classList.toggle('active', p.coverCount === 1);
+  document.getElementById('cover2Btn').classList.toggle('active', p.coverCount === 2);
+  const container = document.getElementById('coverSlots');
+  container.innerHTML = '';
+  for (let i = 0; i < p.coverCount; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'cover-slot';
+    if (p.coverImages[i]) {
+      const img = document.createElement('img');
+      img.src = p.coverImages[i];
+      slot.appendChild(img);
+      const rem = document.createElement('button');
+      rem.className = 'cover-slot-remove'; rem.innerHTML = '×';
+      rem.addEventListener('click', e => { e.stopPropagation(); p.coverImages[i] = null; saveProjects(true); renderCoverSlots(); });
+      slot.appendChild(rem);
+    } else {
+      slot.innerHTML = `<span style="font-size:20px;opacity:.5">+</span><span>Cover ${p.coverCount > 1 ? i + 1 : ''}</span>`;
+    }
+    slot.addEventListener('click', () => uploadCoverFor(i));
+    container.appendChild(slot);
+  }
+}
+
+function uploadCoverFor(idx) {
+  const fp = getFileInput();
+  fp.value = '';
+  fp.onchange = () => {
+    const file = fp.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      compressImage(e.target.result, 1400, 800, 0.85, compressed => {
+        const p = getActive(); if (!p) return;
+        if (!p.coverImages) p.coverImages = [];
+        p.coverImages[idx] = compressed;
+        saveProjects(true);
+        renderCoverSlots();
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+  fp.click();
+}
+
+document.getElementById('cover1Btn').addEventListener('click', () => {
+  const p = getActive(); if (!p) return;
+  p.coverCount = 1; saveProjects(true); renderCoverSlots();
+});
+document.getElementById('cover2Btn').addEventListener('click', () => {
+  const p = getActive(); if (!p) return;
+  p.coverCount = 2; saveProjects(true); renderCoverSlots();
+});
+
+function esc(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Button handlers ──────────────────────────────────────────
+document.getElementById('btnNew').addEventListener('click', () => {
+  const id = 'project-' + Date.now();
+  projects.push({ id, title: 'New Project', year: '', type: '', meta: '', description: '',
+    imageLayout: [], images: [],
+    sections: [{ label: 'Overview', content: '' }] });
+  selectProject(id);
+});
+
+document.getElementById('btnSave').addEventListener('click', () => {
+  const p = getActive(); if (!p) return;
+  p.title       = document.getElementById('fTitle').value;
+  p.year        = document.getElementById('fYear').value;
+  p.type        = document.getElementById('fType').value;
+  p.meta        = document.getElementById('fMeta').value;
+  p.description = document.getElementById('fDesc').value;
+  saveProjects();
+  renderSidebar();
+  document.getElementById('formTitle').textContent = p.title || 'Untitled';
+});
+
+document.getElementById('btnDelete').addEventListener('click', () => {
+  if (!confirm('Delete this project?')) return;
+  projects = projects.filter(p => p.id !== activeId);
+  activeId = null;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+  renderSidebar(); renderForm();
+  showToast('Deleted');
+});
+
+document.getElementById('btnAddSection').addEventListener('click', () => {
+  const p = getActive(); if (!p) return;
+  p.sections.push({ label: 'New Section', content: '' });
+  renderSections(p.sections);
+});
+
+document.getElementById('btnAddBox').addEventListener('click', () => {
+  const p = getActive(); if (!p) return;
+  if (!p.imageLayout) p.imageLayout = [];
+  if (p.imageLayout.length >= 10) { showToast('Maximum 10 images'); return; }
+  const n = p.imageLayout.length;
+  const col = (n % 2) * 51, row = Math.floor(n / 2) * 17;
+  p.imageLayout.push({ left: col, top: row, width: 49, height: 16 });
+  saveProjects(true); renderLayoutBuilder();
+});
+
+document.getElementById('btnClearLayout').addEventListener('click', () => {
+  const p = getActive(); if (!p) return;
+  p.imageLayout = []; p.images = []; saveProjects(true); renderLayoutBuilder();
+});
+
+document.getElementById('snapToggle').addEventListener('change', e => {
+  snapEnabled = e.target.checked;
+});
+
+document.getElementById('btnExport').addEventListener('click', () => {
+  navigator.clipboard.writeText(JSON.stringify(projects, null, 2))
+    .then(() => showToast('JSON copied to clipboard'));
+});
+
+// ── Toast ────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── Init ─────────────────────────────────────────────────────
+loadProjects();
+renderSidebar();
+if (projects.length) selectProject(projects[0].id);
+</script>
+</body>
+</html>

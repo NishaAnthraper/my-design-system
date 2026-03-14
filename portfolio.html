@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nisha Anthraper</title>
+  <meta name="description" content="Nisha Anthraper is a UX Leader and Product Strategist at Bristol Myers Squibb, based in New York." />
+  <meta property="og:title" content="Nisha Anthraper — UX Leader & Product Strategist" />
+  <meta property="og:description" content="Leading UX and product strategy for enterprise AI at Bristol Myers Squibb. Research, design, strategy, ops." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://nishaanthraper.com" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Nisha Anthraper — UX Leader & Product Strategist" />
+  <meta name="twitter:description" content="Leading UX and product strategy for enterprise AI at Bristol Myers Squibb. Research, design, strategy, ops." />
+  <link rel="icon" type="image/png" href="favicon-v2.png" />
+  <link rel="apple-touch-icon" href="favicon-v2.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="tokens.css" />
+  <style>
+
+    /* ── Reset ───────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    html.modal-open { overflow: hidden; }
+    body {
+      font-family: var(--font-sans);
+      font-size: var(--text-base);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      line-height: var(--leading-body);
+      transition: background var(--transition), color var(--transition);
+      margin-right: 160px;
+    }
+    a { color: inherit; text-decoration: none; }
+    em { font-style: italic; }
+
+    /* ── Layout ──────────────────────────────────────────────── */
+    .wrap { max-width: 960px; padding: 0 var(--space-lg); }
+
+    /* ── Sidebar ─────────────────────────────────────────────── */
+    .sidebar {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 160px; z-index: 100;
+      background: var(--color-bg);
+      display: flex; flex-direction: column;
+      padding: var(--space-lg) var(--space-md);
+      align-items: flex-end;
+      text-align: right;
+      transition: background var(--transition);
+    }
+    .sidebar-name {
+      font-size: var(--text-sm); font-weight: var(--weight-medium);
+      color: var(--color-text-primary);
+      line-height: 1.4; display: block; margin-bottom: var(--space-xl);
+    }
+    .sidebar-links { display: flex; flex-direction: column; gap: var(--space-md); list-style: none; flex: 1; }
+    .sidebar-links a {
+      font-size: var(--text-base); font-weight: var(--weight-medium);
+      color: var(--color-text-secondary);
+      transition: color var(--transition);
+    }
+    .sidebar-links a:hover { color: var(--color-accent); }
+    .sidebar-links a.active { color: var(--color-text-primary); font-weight: var(--weight-semibold); }
+    .sidebar-contact { display: flex; flex-direction: column; gap: var(--space-sm); margin-bottom: var(--space-md); }
+    .sidebar-contact a {
+      font-size: var(--text-base); font-weight: var(--weight-medium);
+      color: var(--color-text-secondary);
+      transition: color var(--transition);
+    }
+    .sidebar-contact a:hover { color: var(--color-accent); }
+    .theme-toggle {
+      background: transparent; border: none;
+      color: var(--color-text-tertiary); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0; transition: color var(--transition);
+    }
+    .theme-toggle:hover { color: var(--color-text-primary); }
+
+    /* ── Hero ────────────────────────────────────────────────── */
+    #hero {
+      padding: calc(var(--space-xl) * 1.5) 0 var(--space-xl);
+    }
+    .hero-name {
+      font-size: clamp(48px, 7vw, 96px);
+      font-weight: var(--weight-light);
+      letter-spacing: var(--tracking-tight);
+      line-height: 0.92;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-lg);
+    }
+    .hero-bio {
+      display: flex; flex-direction: column; gap: var(--space-md);
+      max-width: 680px;
+    }
+    .hero-bio p {
+      font-size: var(--text-lg); font-weight: var(--weight-light);
+      color: var(--color-text-secondary); line-height: var(--leading-body);
+    }
+    .hero-bio a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: var(--color-text-tertiary);
+      text-underline-offset: 3px;
+      transition: color var(--transition), text-decoration-color var(--transition);
+    }
+    .hero-bio a:hover { color: var(--color-accent); text-decoration-color: var(--color-accent); }
+
+    /* ── Sections ────────────────────────────────────────────── */
+    .section { padding: var(--space-xl) 0; }
+    .section-label {
+      font-family: var(--font-mono); font-size: var(--text-xs);
+      color: var(--color-text-tertiary); letter-spacing: var(--tracking-wide);
+      text-transform: uppercase; margin-bottom: var(--space-md);
+    }
+
+
+    /* ── Work list ───────────────────────────────────────────── */
+    .work-list { display: flex; flex-direction: column; }
+    .work-item {
+      display: block;
+      padding: var(--space-lg) 0;
+    }
+    .work-meta {
+      display: flex; align-items: baseline; gap: var(--space-md);
+      margin-bottom: var(--space-sm);
+    }
+    .work-year {
+      font-family: var(--font-mono); font-size: var(--text-xs);
+      color: var(--color-text-tertiary); white-space: nowrap;
+    }
+    .work-type {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--color-accent); letter-spacing: var(--tracking-wide);
+      text-transform: uppercase;
+    }
+    .work-title {
+      font-size: var(--text-3xl); font-weight: var(--weight-light);
+      letter-spacing: var(--tracking-tight); line-height: var(--leading-snug);
+      color: var(--color-text-primary);
+      max-width: 640px;
+      margin-bottom: var(--space-sm);
+      text-decoration: none;
+      transition: text-decoration var(--transition);
+    }
+    .work-item:hover .work-title { color: var(--color-accent); }
+    .work-desc {
+      font-size: var(--text-base); color: var(--color-text-secondary);
+      line-height: var(--leading-body);
+      max-width: 560px;
+      margin-bottom: var(--space-lg);
+    }
+    .work-img {
+      width: 100%; aspect-ratio: 16/7;
+      overflow: hidden; background: var(--color-bg-3);
+      position: relative; display: flex; gap: 2px;
+    }
+    .work-img img {
+      flex: 1; min-width: 0; height: 100%; object-fit: cover; display: block;
+    }
+    .work-img-placeholder {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--color-text-tertiary); letter-spacing: var(--tracking-wide);
+    }
+
+    /* ── Modal ───────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 199;
+      background: rgba(0,0,0,0.6);
+      opacity: 0; pointer-events: none;
+      transition: opacity 300ms var(--ease-default);
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      position: fixed;
+      top: 120px; left: 24px; right: 24px;
+      z-index: 200;
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      opacity: 0; pointer-events: none;
+      transform: translateY(100vh);
+      transition: opacity 300ms var(--ease-default), transform 420ms cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    .modal.open { opacity: 1; pointer-events: all; }
+    .modal.no-transition { transition: none !important; }
+    .modal-close {
+      position: absolute;
+      top: var(--space-md); right: var(--space-md);
+      background: none; border: none; cursor: pointer;
+      font-size: var(--text-2xl); font-weight: var(--weight-light);
+      color: var(--color-text-secondary); line-height: 1;
+      transition: color var(--transition);
+    }
+    .modal-close:hover { color: var(--color-text-primary); }
+    .modal-inner {
+      padding: var(--space-lg) var(--space-xl) var(--space-xl);
+    }
+    .modal-header { margin-bottom: var(--space-lg); text-align: center; }
+    .modal-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-light);
+      letter-spacing: var(--tracking-tight);
+      line-height: var(--leading-snug);
+      color: var(--color-text-primary);
+      margin-bottom: 4px;
+    }
+    .modal-meta {
+      font-family: var(--font-mono); font-size: var(--text-xs);
+      color: var(--color-text-tertiary); letter-spacing: var(--tracking-wide);
+      text-transform: uppercase;
+    }
+    .modal-body {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl); align-items: start;
+    }
+    .modal-images {
+      position: relative; width: 100%; aspect-ratio: 1/2;
+      overflow: hidden; margin-bottom: var(--space-lg);
+    }
+    .modal-img { position: absolute; overflow: hidden; }
+    .modal-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .modal-text { display: flex; flex-direction: column; gap: var(--space-lg); }
+    .modal-section { display: flex; flex-direction: column; gap: 8px; }
+    .modal-section-label {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--color-accent); letter-spacing: var(--tracking-wider);
+      text-transform: uppercase;
+    }
+    .modal-section-body {
+      font-size: var(--text-base); font-weight: var(--weight-regular);
+      color: var(--color-text-secondary); line-height: var(--leading-body);
+    }
+    .modal-section-body ol,
+    .modal-section-body ul {
+      padding-left: 1.25em;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .modal-section-body li { padding-left: 4px; }
+    @media (max-width: 768px) {
+      .modal-body { grid-template-columns: 1fr; }
+    }
+
+    /* ── Speaking & Writing ──────────────────────────────────── */
+    .writing-list { display: flex; flex-direction: column; }
+    .writing-item {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 0 var(--space-lg);
+      padding: var(--space-md) 0;
+      border-top: 1px solid var(--color-border);
+    }
+    .writing-item:last-child { border-bottom: 1px solid var(--color-border); }
+    .writing-year {
+      font-family: var(--font-mono); font-size: var(--text-xs);
+      color: var(--color-text-tertiary); padding-top: 4px; white-space: nowrap;
+    }
+    .writing-body { display: flex; flex-direction: column; gap: 4px; }
+    .writing-type {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--color-accent); letter-spacing: var(--tracking-wide);
+      text-transform: uppercase;
+    }
+    .writing-title {
+      font-size: var(--text-lg); font-weight: var(--weight-light);
+      letter-spacing: var(--tracking-tight); line-height: var(--leading-snug);
+      color: var(--color-text-primary);
+      transition: color var(--transition);
+    }
+    .writing-item:hover .writing-title { color: var(--color-accent); }
+    .writing-pub {
+      font-size: var(--text-sm); color: var(--color-text-tertiary);
+    }
+
+    /* ── Connect ─────────────────────────────────────────────── */
+    .connect-heading {
+      font-size: clamp(36px, 5vw, 72px); font-weight: var(--weight-light);
+      letter-spacing: var(--tracking-tight); line-height: var(--leading-snug);
+      color: var(--color-text-primary); margin-bottom: var(--space-md);
+    }
+    .connect-sub {
+      font-size: var(--text-lg); font-weight: var(--weight-light);
+      color: var(--color-text-secondary); line-height: var(--leading-body);
+      max-width: 480px; margin-bottom: var(--space-xl);
+    }
+    .connect-links { display: flex; gap: var(--space-lg); flex-wrap: wrap; }
+    .connect-link {
+      font-size: var(--text-base); font-weight: var(--weight-medium);
+      color: var(--color-text-primary);
+      border-bottom: 1px solid var(--color-text-tertiary); padding-bottom: 3px;
+      transition: color var(--transition), border-color var(--transition);
+    }
+    .connect-link:hover { color: var(--color-accent); border-color: var(--color-accent); }
+
+    /* ── Footer ──────────────────────────────────────────────── */
+    .footer-wrap { }
+    footer {
+      max-width: 960px;
+      padding: var(--space-md) var(--space-lg);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-copy {
+      font-family: var(--font-mono); font-size: var(--text-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    /* ── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      body { margin-right: 0; }
+      .sidebar { display: none; }
+      .work-title { font-size: var(--text-2xl); }
+      .writing-item { grid-template-columns: 48px 1fr; }
+    }
+    @media (max-width: 600px) {
+      .section { padding: var(--space-lg) 0; }
+      #hero { padding: var(--space-lg) 0; }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- ── Sidebar ───────────────────────────────────────────── -->
+<aside class="sidebar">
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" style="margin-bottom: var(--space-xl);">
+    <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
+  <ul class="sidebar-links">
+    <li><a href="#hero">About</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#writing">Writing</a></li>
+  </ul>
+  <div class="sidebar-contact">
+    <a href="mailto:nishatanthraper@gmail.com">Email ↗</a>
+    <a href="https://linkedin.com/in/nishatanthraper" target="_blank" rel="noopener">LinkedIn ↗</a>
+    <a href="https://medium.com/@nishatanthraper" target="_blank" rel="noopener">Medium ↗</a>
+  </div>
+</aside>
+
+<!-- ── Hero ────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="wrap">
+    <h1 class="hero-name">Nisha<br>Anthraper.</h1>
+<div class="hero-bio">
+      <p>I lead UX and product strategy at <a href="https://www.bms.com" target="_blank" rel="noopener">Bristol Myers Squibb</a>, working across research, design, product ownership, and the operational layer that holds it all together — the part most people don't see but everyone feels when it's missing.</p>
+      <p>A decade in, I've learned that the most important work happens before anyone opens a design tool — reframing the problem, getting stakeholders to the same truth, and making sure the team is solving the right thing. That's where I focus.</p>
+      <p>I'm a generalist by nature. I've built products from 0→1 and scaled them past that. I share openly, and know from experience that the gap between a good idea and a shipped product is almost entirely about the people.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Work ─────────────────────────────────────────────────── -->
+<section id="work" class="section">
+  <div class="wrap">
+    <div class="section-label">Selected work</div>
+    <div class="work-list" id="workList"></div>
+  </div>
+</section>
+
+<!-- ── Speaking & Writing ─────────────────────────────────────── -->
+<section id="writing" class="section">
+  <div class="wrap">
+    <div class="section-label">Speaking &amp; Writing</div>
+    <div class="writing-list">
+      <a class="writing-item" href="#" target="_blank" rel="noopener">
+        <span class="writing-year">2024</span>
+        <div class="writing-body">
+          <span class="writing-type">Article</span>
+          <div class="writing-title">Unlocking Insights: Data Exploration for UX Researchers</div>
+          <span class="writing-pub">Medium</span>
+        </div>
+      </a>
+      <a class="writing-item" href="#" target="_blank" rel="noopener">
+        <span class="writing-year">2023</span>
+        <div class="writing-body">
+          <span class="writing-type">Talk</span>
+          <div class="writing-title">Designing for Ambiguity: UX in Regulated Environments</div>
+          <span class="writing-pub">UX Insider Conference</span>
+        </div>
+      </a>
+      <a class="writing-item" href="#" target="_blank" rel="noopener">
+        <span class="writing-year">2023</span>
+        <div class="writing-body">
+          <span class="writing-type">Article</span>
+          <div class="writing-title">When the Brief Is Wrong: How to Reframe Before You Redesign</div>
+          <span class="writing-pub">Medium</span>
+        </div>
+      </a>
+      <a class="writing-item" href="#" target="_blank" rel="noopener">
+        <span class="writing-year">2022</span>
+        <div class="writing-body">
+          <span class="writing-type">Talk</span>
+          <div class="writing-title">Research as a Leadership Practice</div>
+          <span class="writing-pub">Women in UX Summit</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Connect ───────────────────────────────────────────────── -->
+<section id="contact" class="section">
+  <div class="wrap">
+    <h2 class="connect-heading">Let's talk.</h2>
+    <p class="connect-sub">Research, design, collaboration, or just a good conversation about UX — reach out.</p>
+    <div class="connect-links">
+      <a class="connect-link" href="mailto:nishatanthraper@gmail.com">Email ↗</a>
+      <a class="connect-link" href="https://linkedin.com/in/nishatanthraper" target="_blank" rel="noopener">LinkedIn ↗</a>
+      <a class="connect-link" href="https://medium.com/@nishatanthraper" target="_blank" rel="noopener">Medium ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Project Modal ─────────────────────────────────────────── -->
+<div class="modal-overlay" id="modalOverlay"></div>
+<div class="modal" id="projectModal" role="dialog" aria-modal="true">
+  <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+  <div class="modal-inner">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <div class="modal-meta" id="modalMeta"></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-images" id="modalImages"></div>
+      <div class="modal-text" id="modalText"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Footer ───────────────────────────────────────────────── -->
+<div class="footer-wrap">
+  <footer>
+    <span class="footer-copy">© 2026 Nisha Anthraper</span>
+    <span class="footer-copy">Built in a Claude Code ↔ Figma loop — tokens, design system, and portfolio</span>
+  </footer>
+</div>
+
+<script>
+  // ── CMS data ─────────────────────────────────────────────────
+  const STORAGE_KEY = 'nisha_projects';
+
+  const SEED = [
+    {
+      id: 'unlocking-insights',
+      title: 'Unlocking Insights: Data Exploration for UX Researchers',
+      year: '2024', type: 'UX Research', meta: 'UX Research · 2024',
+      description: 'A deep dive into how researchers can leverage data exploration techniques to surface meaningful insights faster and with more confidence.',
+      sections: [
+        { label: 'Overview', content: 'A deep dive into how UX researchers can leverage data exploration techniques to surface meaningful insights faster and with more confidence. The project emerged from a recurring frustration: research teams generating rich data but struggling to move from raw findings to clear direction. The goal was a repeatable, teachable framework — not a one-time fix.' },
+        { label: 'The Challenge', content: 'Research teams were drowning in data but struggling to synthesize it into actionable direction. There was no shared framework for moving from raw findings to decisions. Senior researchers were doing it intuitively but couldn\'t articulate the steps. Junior researchers had no scaffold to follow. The gap was costing weeks per project cycle.' },
+        { label: 'My Role', content: 'I led the end-to-end research and framework development — from generative discovery through validation, documentation, and rollout. I worked cross-functionally with research leads, product managers, and learning & development to ensure the framework was grounded in real workflows and would actually get used.' },
+        { label: 'Solution', content: 'A structured data exploration framework that gives researchers a repeatable process — from data collection through synthesis to insight generation. The framework has four phases: scope, cluster, interrogate, and land. Each phase has clear entry and exit criteria so teams know when to move forward and when to go deeper.' },
+        { label: 'Design Process', content: 'Conducted generative interviews with 12 UX researchers across industries. Mapped existing workflows, identified bottlenecks, and iterated on the framework through two rounds of validation. Created supporting materials including a facilitation guide, a self-assessment tool, and a set of worked examples showing the framework applied to real past projects.' },
+        { label: 'What I Learned', content: 'The hardest part wasn\'t the framework itself — it was getting researchers to trust a structured process when their instinct was to stay in exploratory mode indefinitely. The framing that worked: the framework doesn\'t replace judgment, it creates the conditions for better judgment.' },
+        { label: 'Results', content: 'Reduced time-to-insight for participating teams. Framework adopted as an internal standard and published as a reference for the wider research community. Three months post-launch, teams reported higher confidence in presenting findings and fewer rounds of stakeholder pushback on research direction.' }
+      ]
+    },
+    {
+      id: 'avalara-workramp',
+      title: "Evaluative UXR Study: Product Performance for Avalara's Learning Platform",
+      year: '2023', type: 'UX Research', meta: 'UX Research · 2023',
+      description: 'Global evaluative study with 500+ users measuring product performance and surfacing usability gaps across a complex enterprise platform.',
+      sections: [
+        { label: 'Overview', content: "WorkRamp functions as Avalara's unified learning platform, consolidating previously dispersed departmental systems. The platform aimed to eliminate inconsistent usage patterns and improve data collection across the organization. This evaluative study measured product performance across three user groups — Learners, Managers, and Administrators — to identify usability gaps and surface a clear direction for improvement." },
+        { label: 'The Challenge', content: 'Despite implementation benefits, challenges emerged around inconsistent user engagement and adoption. The research sought to identify pain points and create a cohesive experience for Learner, Manager, and Administrator console users regardless of role, tenure, region, or department. Diverse departmental priorities required strategic communication and negotiation to align stakeholders on a shared research agenda.' },
+        { label: 'Solution', content: "A mixed-methods study designed to resolve the team's open questions with enough confidence to act. Research questions focused on three areas: usability issues challenging WorkRamp users, effectiveness of search and discovery methods, and whether content offerings met user knowledge needs. The approach combined heuristic evaluation, large-scale survey, and moderated interviews to triangulate findings across all three consoles." },
+        { label: 'Key Objectives', content: 'Improve User Engagement · Provide a Unified and User-Friendly Experience · Enhance Search and Discovery Capabilities · Ensure Content Relevance and Quality' },
+        { label: 'Research Questions', content: '1. What usability issues and challenges do users encounter while navigating WorkRamp?\n2. How effective are the search and discovery methods for finding content on the platform?\n3. Do the content offerings effectively meet the knowledge needs of users?' },
+        { label: 'Design Process', content: 'Conducted a heuristic evaluation of all three consoles. Ran a survey with 512 responses from a diverse cross-section of the workforce. Conducted 18 user interviews — 10 Learners, 5 Administrators, and 3 Managers — using remote usability testing sessions. Synthesized quantitative and qualitative data in parallel and presented findings as a prioritized action plan tied directly to the platform\'s adoption objectives.' },
+        { label: 'Results', content: 'Learners were found to overlook the filter icon, relying solely on quick search — pointing to a discoverability issue. Managers faced frustration due to limited permissions and views. Administrators lacked training resources for content creation. Findings directly informed the product roadmap, with improvements targeting enhanced user engagement and platform adoption, improved employee learning outcomes, empowered manager tracking capabilities, and streamlined administrative content management.' }
+      ]
+    },
+    {
+      id: 'clothing-boutique',
+      title: 'Web App to Improve Operational Efficiency for a Clothing Boutique',
+      year: '2022', type: 'Product Design', meta: 'Product Design · 2022',
+      description: 'End-to-end design from system analysis through high-fidelity prototype and usability validation for an independent retail operation.',
+      sections: [
+        { label: 'Overview', content: 'End-to-end design for a web application to improve operational efficiency for an independent clothing boutique — from system analysis through high-fidelity prototype and usability validation.' },
+        { label: 'The Challenge', content: 'The owner and staff were managing inventory, orders, and scheduling across disconnected tools. Manual workarounds were costing hours every week and creating errors.' },
+        { label: 'Solution', content: 'A unified web app giving staff a single source of truth for inventory, scheduling, and order management — designed around how they actually worked, not how the tools assumed they did.' },
+        { label: 'Design Process', content: 'Started with an operational audit and contextual interviews. Mapped current workflows against tool capabilities to identify the gaps. Iterated through wireframes and two rounds of usability testing before handoff.' },
+        { label: 'Results', content: 'Eliminated 6+ hours of manual work per week. Reduced inventory errors significantly. Owner reported the tool paid for itself within the first month of use.' }
+      ]
+    },
+    {
+      id: 'peerconnect',
+      title: 'Enhancing Transfer Student Support with PeerConnect',
+      year: '2022', type: 'UX Research · Product Strategy', meta: 'UX Research · Product Strategy · 2022',
+      description: 'Generative UXR study identifying unmet needs of transfer students, resulting in a peer-connection platform concept backed by evidence.',
+      sections: [
+        { label: 'Overview', content: 'Generative UXR study identifying unmet needs of transfer students, resulting in a peer-connection platform concept backed by evidence.' },
+        { label: 'The Challenge', content: 'Transfer students were falling through the cracks — existing support systems were built for first-year students and didn\'t address the specific navigational and social challenges of transferring mid-degree.' },
+        { label: 'Solution', content: 'PeerConnect — a platform concept pairing incoming transfer students with near-peer mentors who had recently navigated the same transition, addressing the social and informational gaps existing systems missed.' },
+        { label: 'Design Process', content: 'Interviews and diary studies with 30+ transfer students across two institutions. Affinity mapping revealed that the hardest part wasn\'t academic — it was knowing what you didn\'t know. Concept validated through two rounds of concept testing.' },
+        { label: 'Results', content: 'Platform concept endorsed by university administration for pilot development. Research findings presented to student services leadership and informed a revision of the existing transfer support program.' }
+      ]
+    },
+    {
+      id: 'music-wellbeing',
+      title: 'Personalized Music Recommendation for Mental Well-being',
+      year: 'Ongoing', type: 'Quantitative Research', meta: 'Quantitative Research · Ongoing',
+      description: 'Using survey data and machine learning to match music preferences with mental health patterns — exploring whether what we listen to can be a lever for emotional regulation.',
+      sections: [
+        { label: 'Overview', content: 'Using survey data and machine learning to match music preferences with mental health patterns — exploring whether what we listen to can be a lever for emotional regulation.' },
+        { label: 'The Challenge', content: 'Mental health interventions are often inaccessible, stigmatized, or require significant behavior change. Music is already embedded in daily life — the question is whether it can be made intentional enough to have therapeutic value.' },
+        { label: 'Solution', content: 'A personalized recommendation model that matches listening behavior with self-reported mood data, identifying patterns and surfacing music likely to support emotional regulation goals.' },
+        { label: 'Design Process', content: 'Survey-based data collection with 200+ participants. Exploratory data analysis to identify listening-mood correlations. Machine learning model development ongoing, with the next phase focused on real-time personalization.' },
+        { label: 'Results', content: 'Early findings show meaningful correlations between listening behavior and mood patterns. Research ongoing — next phase will test whether intentional music selection produces measurable shifts in emotional state over time.' }
+      ]
+    }
+  ];
+
+  function renderContent(text) {
+    if (!text) return '';
+    const lines = text.split('\n');
+    let html = '';
+    let inList = false;
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) {
+        if (inList) { html += '</ol>'; inList = false; }
+        continue;
+      }
+      if (/^\d+\.\s+/.test(trimmed)) {
+        if (inList === 'ul') { html += '</ul>'; inList = false; }
+        if (!inList) { html += '<ol>'; inList = 'ol'; }
+        html += `<li>${trimmed.replace(/^\d+\.\s+/, '')}</li>`;
+      } else if (/^-\s+/.test(trimmed)) {
+        if (inList === 'ol') { html += '</ol>'; inList = false; }
+        if (!inList) { html += '<ul>'; inList = 'ul'; }
+        html += `<li>${trimmed.replace(/^-\s+/, '')}</li>`;
+      } else {
+        if (inList === 'ol') { html += '</ol>'; inList = false; }
+        if (inList === 'ul') { html += '</ul>'; inList = false; }
+        html += trimmed;
+      }
+    }
+    if (inList === 'ol') html += '</ol>';
+    if (inList === 'ul') html += '</ul>';
+    return html;
+  }
+
+  function getProjects() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try { return JSON.parse(stored); } catch(e) {}
+    }
+    return SEED;
+  }
+
+  function renderWorkList(projects) {
+    const list = document.getElementById('workList');
+    list.innerHTML = projects.map(p => `
+      <a class="work-item" href="#" data-id="${p.id}">
+        <div class="work-meta">
+          <span class="work-year">${p.year}</span>
+          <span class="work-type">${p.type}</span>
+        </div>
+        <div class="work-title">${p.title}</div>
+        <p class="work-desc">${p.description}</p>
+        <div class="work-img">${
+          p.coverImages && p.coverImages.filter(Boolean).length
+            ? p.coverImages.filter(Boolean).map(src => `<img src="${src}" alt="${p.title}" />`).join('')
+            : `<div class="work-img-placeholder"></div>`
+        }</div>
+      </a>
+    `).join('');
+    list.querySelectorAll('.work-item').forEach(item => {
+      item.addEventListener('click', e => {
+        e.preventDefault();
+        const project = projects.find(p => p.id === item.dataset.id);
+        if (project) openModal(project);
+      });
+    });
+  }
+
+  const allProjects = getProjects();
+  renderWorkList(allProjects);
+
+  // ── Project modal ───────────────────────────────────────────
+  const modal      = document.getElementById('projectModal');
+  const overlay    = document.getElementById('modalOverlay');
+  const modalClose = document.getElementById('modalClose');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalMeta  = document.getElementById('modalMeta');
+  const modalText  = document.getElementById('modalText');
+
+  const MODAL_TOP    = 120;
+  const MODAL_BOTTOM = 120;
+  let modalY    = 0;
+  let maxScroll = 0;
+
+  function handleWheel(e) {
+    e.preventDefault();
+    modal.classList.add('no-transition');
+    modalY = Math.max(-maxScroll, Math.min(0, modalY - e.deltaY));
+    modal.style.transform = `translateY(${modalY}px)`;
+  }
+
+  let touchY = 0;
+  function handleTouchStart(e) { touchY = e.touches[0].clientY; }
+  function handleTouchMove(e) {
+    e.preventDefault();
+    const delta = touchY - e.touches[0].clientY;
+    touchY = e.touches[0].clientY;
+    modal.classList.add('no-transition');
+    modalY = Math.max(-maxScroll, Math.min(0, modalY - delta));
+    modal.style.transform = `translateY(${modalY}px)`;
+  }
+
+  function openModal(project) {
+    modalTitle.textContent = project.title;
+    modalMeta.textContent  = project.meta;
+    const layout = project.imageLayout || [];
+    const imgs   = project.images || [];
+    const modalImages = document.getElementById('modalImages');
+    modalImages.style.cssText = '';
+    modalImages.innerHTML = layout.map((box, i) => {
+      if (!imgs[i]) return '';
+      return `<div class="modal-img" style="left:${box.left}%;top:${box.top}%;width:${box.width}%;height:${box.height}%;"><img src="${imgs[i]}" alt="" /></div>`;
+    }).join('');
+    modalText.innerHTML    = project.sections.map(s => `
+      <div class="modal-section">
+        <div class="modal-section-label">${s.label}</div>
+        <div class="modal-section-body">${renderContent(s.content)}</div>
+      </div>`).join('');
+
+    modalY = 0;
+    modal.classList.remove('no-transition');
+    modal.style.transform = '';
+    modal.classList.add('open');
+    overlay.classList.add('open');
+    document.documentElement.classList.add('modal-open');
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        modal.style.transform = 'translateY(0)';
+      });
+    });
+
+    setTimeout(() => {
+      maxScroll = Math.max(0, modal.offsetHeight - window.innerHeight + MODAL_TOP + MODAL_BOTTOM);
+      window.addEventListener('wheel', handleWheel, { passive: false });
+      window.addEventListener('touchstart', handleTouchStart, { passive: true });
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    }, 420);
+  }
+
+  function closeModal() {
+    window.removeEventListener('wheel', handleWheel);
+    window.removeEventListener('touchstart', handleTouchStart);
+    window.removeEventListener('touchmove', handleTouchMove);
+    modal.classList.remove('no-transition');
+    modal.style.transform = 'translateY(100vh)';
+    modal.classList.remove('open');
+    overlay.classList.remove('open');
+    document.documentElement.classList.remove('modal-open');
+    setTimeout(() => { modal.style.transform = ''; modalY = 0; }, 420);
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  overlay.addEventListener('click', closeModal);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // ── Scroll spy ──────────────────────────────────────────────
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.sidebar-links a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector(`.sidebar-links a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  sections.forEach(s => observer.observe(s));
+
+  // ── Theme toggle ────────────────────────────────────────────
+  const html = document.documentElement;
+  const btn  = document.getElementById('themeToggle');
+  const icon = document.getElementById('themeIcon');
+  const MOON = `<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>`;
+  const SUN  = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
+  const saved = localStorage.getItem('ds-theme') || 'light';
+  html.dataset.theme = saved;
+  icon.innerHTML = saved === 'light' ? MOON : SUN;
+  btn.addEventListener('click', () => {
+    const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+    html.dataset.theme = next;
+    localStorage.setItem('ds-theme', next);
+    icon.innerHTML = next === 'light' ? MOON : SUN;
+  });
+</script>
+</body>
+</html>

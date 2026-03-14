@@ -1,0 +1,112 @@
+/* ============================================================
+   Design System Tokens
+   tokens.css — single source of truth for all CSS custom properties
+   ============================================================ */
+
+:root {
+
+  /* ── Color: Brand ─────────────────────────────────────────── */
+  --color-primary:      #0f0f0f;
+  --color-accent-warm:  #14149E;
+  --color-accent-cool:  #9E9E14;
+
+  /* ── Color: Neutral scale ─────────────────────────────────── */
+  --color-neutral-50:   #fafafa;
+  --color-neutral-100:  #f5f5f5;
+  --color-neutral-200:  #e5e5e5;
+  --color-neutral-300:  #d4d4d4;
+  --color-neutral-400:  #a3a3a3;
+  --color-neutral-500:  #737373;
+  --color-neutral-600:  #525252;
+  --color-neutral-700:  #404040;
+  --color-neutral-800:  #262626;
+  --color-neutral-900:  #171717;
+
+  /* ── Color: Semantic (dark mode defaults) ─────────────────── */
+  --color-bg:           var(--color-primary);
+  --color-bg-2:         #1a1a1a;
+  --color-bg-3:         #242424;
+  --color-border:       rgba(255, 255, 255, 0.08);
+  --color-text-primary: var(--color-neutral-50);
+  --color-text-secondary: var(--color-neutral-400);
+  --color-text-tertiary:  var(--color-neutral-600);
+  --color-accent:       var(--color-accent-cool);
+
+  /* ── Color: Semantic status ───────────────────────────────── */
+  --color-destructive:  #ef4444;
+  --color-success:      #22c55e;
+  --color-warning:      #eab308;
+
+  /* ── Spacing scale ────────────────────────────────────────── */
+  --space-xs:   8px;
+  --space-sm:  16px;
+  --space-md:  24px;
+  --space-lg:  48px;
+  --space-xl:  80px;
+
+  /* ── Typography: Family ───────────────────────────────────── */
+  --font-sans:   'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --font-mono:   'IBM Plex Mono', 'Fira Code', monospace;
+
+  /* ── Typography: Size scale ───────────────────────────────── */
+  --text-xs:    12px;
+  --text-sm:    14px;
+  --text-base:  16px;
+  --text-lg:    20px;
+  --text-xl:    24px;
+  --text-2xl:   28px;
+  --text-3xl:   36px;
+  --text-4xl:   48px;
+  --text-hero:  clamp(48px, 8vw, 96px);
+
+  /* ── Typography: Weight ───────────────────────────────────── */
+  --weight-light:   300;
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-semibold:600;
+
+  /* ── Typography: Leading ──────────────────────────────────── */
+  --leading-tight: 0.9;
+  --leading-snug:  1.1;
+  --leading-normal:1.4;
+  --leading-body:  1.7;
+
+  /* ── Typography: Tracking ─────────────────────────────────── */
+  --tracking-tight:  -0.02em;
+  --tracking-normal:  0;
+  --tracking-wide:    0.08em;
+  --tracking-wider:   0.12em;
+
+  /* ── Border radius ────────────────────────────────────────── */
+  --radius-sm:  6px;
+  --radius-md:  12px;
+  --radius-lg:  20px;
+  --radius-full:999px;
+
+  /* ── Shadow ───────────────────────────────────────────────── */
+  --shadow-sm:  0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md:  0 4px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg:  0 8px 48px rgba(0, 0, 0, 0.6);
+
+  /* ── Transition ───────────────────────────────────────────── */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast:   100ms;
+  --duration-base:   200ms;
+  --duration-slow:   300ms;
+  --transition:      200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Light mode overrides ─────────────────────────────────── */
+[data-theme="light"] {
+  --color-bg:             var(--color-neutral-50);
+  --color-bg-2:           var(--color-neutral-100);
+  --color-bg-3:           var(--color-neutral-200);
+  --color-border:         rgba(0, 0, 0, 0.08);
+  --color-text-primary:   var(--color-neutral-900);
+  --color-text-secondary: var(--color-neutral-600);
+  --color-text-tertiary:  var(--color-neutral-400);
+  --color-accent:         var(--color-accent-warm);
+  --shadow-sm:  0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md:  0 4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg:  0 8px 48px rgba(0, 0, 0, 0.12);
+}
