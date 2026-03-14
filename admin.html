@@ -8,7 +8,7 @@
       const key = 'admin_auth';
       if (sessionStorage.getItem(key) !== 'true') {
         const pw = prompt('Password:');
-        if (pw !== 'nisha2024') { document.write('<h2 style="font-family:sans-serif;padding:2rem">Access denied.</h2>'); throw new Error('auth'); }
+        if (pw !== '1822') { document.write('<h2 style="font-family:sans-serif;padding:2rem">Access denied.</h2>'); throw new Error('auth'); }
         sessionStorage.setItem(key, 'true');
       }
     })();
