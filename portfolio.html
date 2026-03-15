@@ -176,13 +176,14 @@
     .modal-overlay.open { opacity: 1; pointer-events: all; }
     .modal {
       position: fixed;
-      top: 120px; left: 24px; right: 24px;
+      top: 120px; left: 24px; right: 24px; bottom: 120px;
       z-index: 200;
       background: var(--color-bg);
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-lg);
       opacity: 0; pointer-events: none;
       transform: translateY(100vh);
+      overflow-y: auto;
       transition: opacity 300ms var(--ease-default), transform 420ms cubic-bezier(0.32, 0.72, 0, 1);
     }
     .modal.open { opacity: 1; pointer-events: all; }
@@ -593,26 +594,6 @@
 
   const MODAL_TOP    = 120;
   const MODAL_BOTTOM = 120;
-  let modalY    = 0;
-  let maxScroll = 0;
-
-  function handleWheel(e) {
-    e.preventDefault();
-    modal.classList.add('no-transition');
-    modalY = Math.max(-maxScroll, Math.min(0, modalY - e.deltaY));
-    modal.style.transform = `translateY(${modalY}px)`;
-  }
-
-  let touchY = 0;
-  function handleTouchStart(e) { touchY = e.touches[0].clientY; }
-  function handleTouchMove(e) {
-    e.preventDefault();
-    const delta = touchY - e.touches[0].clientY;
-    touchY = e.touches[0].clientY;
-    modal.classList.add('no-transition');
-    modalY = Math.max(-maxScroll, Math.min(0, modalY - delta));
-    modal.style.transform = `translateY(${modalY}px)`;
-  }
 
   function openModal(project) {
     modalTitle.textContent = project.title;
@@ -631,7 +612,7 @@
         <div class="modal-section-body">${renderContent(s.content)}</div>
       </div>`).join('');
 
-    modalY = 0;
+    modal.scrollTop = 0;
     modal.classList.remove('no-transition');
     modal.style.transform = '';
     modal.classList.add('open');
@@ -643,19 +624,9 @@
         modal.style.transform = 'translateY(0)';
       });
     });
-
-    setTimeout(() => {
-      maxScroll = Math.max(0, modal.offsetHeight - window.innerHeight + MODAL_TOP + MODAL_BOTTOM);
-      window.addEventListener('wheel', handleWheel, { passive: false });
-      window.addEventListener('touchstart', handleTouchStart, { passive: true });
-      window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    }, 420);
   }
 
   function closeModal() {
-    window.removeEventListener('wheel', handleWheel);
-    window.removeEventListener('touchstart', handleTouchStart);
-    window.removeEventListener('touchmove', handleTouchMove);
     modal.classList.remove('no-transition');
     modal.style.transform = 'translateY(100vh)';
     modal.classList.remove('open');
